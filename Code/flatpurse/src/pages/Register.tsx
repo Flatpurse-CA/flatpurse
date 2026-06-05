@@ -545,7 +545,12 @@ export default function Register() {
                 </div>
                 {error && <div style={{ background: mode === 'dark' ? 'rgba(248,113,113,0.08)' : 'rgba(220,38,38,0.06)', border: `1px solid ${mode === 'dark' ? 'rgba(248,113,113,0.25)' : 'rgba(220,38,38,0.2)'}`, borderRadius: 10, padding: '12px 14px', color: C.error, fontSize: 13, lineHeight: 1.5, marginBottom: 16 }}>{error}</div>}
                 <div style={fadeUp(320)}>
-                  <button type="button" onClick={() => goToStep(2)} style={{ width: '100%', background: C.submitBg, color: C.submitText, border: 'none', borderRadius: 12, padding: '14px', fontSize: 15, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+                  <button type="button" onClick={() => {
+                    if (!firstName.trim() || !lastName.trim()) { setError('Please enter your first and last name.'); return }
+                    if (!email.trim()) { setError('Please enter your email address.'); return }
+                    if (password.length < 8) { setError('Password must be at least 8 characters.'); return }
+                    setError(null); goToStep(2)
+                  }} style={{ width: '100%', background: C.submitBg, color: C.submitText, border: 'none', borderRadius: 12, padding: '14px', fontSize: 15, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
                     Next Step <ArrowRightIcon />
                   </button>
                 </div>
@@ -589,7 +594,12 @@ export default function Register() {
                   </div>
                 </div>
                 <div style={{ marginTop: 26, ...fadeUp(260) }}>
-                  <button type="button" onClick={() => goToStep(3)} style={{ width: '100%', background: C.submitBg, color: C.submitText, border: 'none', borderRadius: 12, padding: '14px', fontSize: 15, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+                  <button type="button" onClick={() => {
+                    if (!shopName.trim()) { setError('Please enter your shop name.'); return }
+                    if (!businessType) { setError('Please select a business type.'); return }
+                    if (!city.trim() || !province) { setError('Please enter your city and province.'); return }
+                    setError(null); goToStep(3)
+                  }} style={{ width: '100%', background: C.submitBg, color: C.submitText, border: 'none', borderRadius: 12, padding: '14px', fontSize: 15, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
                     Next Step <ArrowRightIcon />
                   </button>
                 </div>
