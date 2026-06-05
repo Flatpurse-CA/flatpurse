@@ -425,57 +425,89 @@ export default function Register() {
             {/* ── Step 3: Pricing ── */}
             {step === 3 && (
               <>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10, marginBottom: 12 }}>
-                  {PRICING.map(plan => (
-                    <div key={plan.id} onClick={() => setSelectedPlan(plan.id)}
-                      style={{ position: 'relative', background: plan.popular ? 'rgba(109,40,217,0.18)' : 'rgba(255,255,255,0.04)', border: `1px solid ${selectedPlan === plan.id ? C.accent : plan.popular ? 'rgba(109,40,217,0.5)' : 'rgba(255,255,255,0.1)'}`, borderRadius: 14, padding: '18px 14px', cursor: 'pointer', transition: 'border-color 0.15s' }}>
-                      {plan.popular && (
-                        <div style={{ position: 'absolute', top: -11, left: '50%', transform: 'translateX(-50%)', background: C.accent, color: '#fff', fontSize: 10, fontWeight: 700, padding: '3px 10px', borderRadius: 100, whiteSpace: 'nowrap' }}>
-                          Most Popular
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10, marginBottom: 14, alignItems: 'stretch' }}>
+                  {PRICING.map(plan => {
+                    const sel = selectedPlan === plan.id
+                    const bg = plan.popular
+                      ? 'linear-gradient(155deg, #3B1A9A 0%, #1A0850 55%, #0C0320 100%)'
+                      : plan.id === 'unlimited'
+                      ? 'linear-gradient(155deg, rgba(22,12,44,0.95) 0%, rgba(6,3,14,0.98) 100%)'
+                      : 'rgba(255,255,255,0.03)'
+                    const shadow = plan.popular
+                      ? sel ? '0 0 0 2px #7C3AED, 0 20px 56px rgba(109,40,217,0.55)' : '0 16px 48px rgba(109,40,217,0.38), 0 0 0 1px rgba(139,92,246,0.35)'
+                      : sel ? '0 0 0 2px #7C3AED' : 'none'
+                    const border = plan.popular ? 'none' : `1px solid ${sel ? 'rgba(124,58,237,0.55)' : 'rgba(255,255,255,0.08)'}`
+                    return (
+                      <div key={plan.id} onClick={() => setSelectedPlan(plan.id)}
+                        style={{ position: 'relative', background: bg, border, borderRadius: 18, padding: '20px 16px 18px', cursor: 'pointer', transition: 'box-shadow 0.2s', boxShadow: shadow, transform: plan.popular ? 'scale(1.03)' : 'none', display: 'flex', flexDirection: 'column' }}>
+
+                        {/* Popular pill — inside card, top-right */}
+                        {plan.popular && (
+                          <div style={{ position: 'absolute', top: 16, right: 14, background: 'rgba(139,92,246,0.2)', border: '1px solid rgba(167,139,250,0.4)', borderRadius: 100, padding: '3px 9px', fontSize: 9, fontWeight: 700, color: '#C4B5FD', letterSpacing: '0.09em', textTransform: 'uppercase' }}>
+                            Popular
+                          </div>
+                        )}
+
+                        {/* Plan name */}
+                        <p style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', color: plan.popular ? 'rgba(196,181,253,0.6)' : C.muted, margin: '0 0 12px' }}>
+                          {plan.name}
+                        </p>
+
+                        {/* Price */}
+                        <div style={{ marginBottom: 8 }}>
+                          <span style={{ fontSize: 34, fontWeight: 800, letterSpacing: '-0.04em', lineHeight: 1, color: plan.popular ? '#EDE9FE' : C.text }}>
+                            {plan.price}
+                          </span>
+                          <span style={{ fontSize: 11, color: plan.popular ? 'rgba(196,181,253,0.55)' : C.muted, marginLeft: 3 }}>
+                            {plan.period}
+                          </span>
                         </div>
-                      )}
-                      <p style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: C.muted, margin: '0 0 10px' }}>{plan.name}</p>
-                      <div style={{ display: 'flex', alignItems: 'baseline', gap: 2, marginBottom: 2 }}>
-                        <span style={{ fontSize: 24, fontWeight: 800, color: C.text, lineHeight: 1 }}>{plan.price}</span>
-                        <span style={{ fontSize: 11, color: C.muted }}>{plan.period}</span>
+
+                        {/* Description */}
+                        <p style={{ fontSize: 11.5, color: plan.popular ? 'rgba(196,181,253,0.6)' : C.muted, lineHeight: 1.55, margin: '0 0 16px', flexGrow: 0, minHeight: 34 }}>
+                          {plan.desc}
+                        </p>
+
+                        {/* CTA button */}
+                        <button type="button" onClick={e => { e.stopPropagation(); setSelectedPlan(plan.id) }}
+                          style={{ width: '100%', background: plan.popular ? 'linear-gradient(135deg, #7C3AED 0%, #5B21B6 100%)' : sel ? 'rgba(109,40,217,0.18)' : 'rgba(255,255,255,0.05)', border: plan.popular ? 'none' : `1px solid ${sel ? 'rgba(124,58,237,0.5)' : 'rgba(255,255,255,0.1)'}`, color: plan.popular ? '#fff' : sel ? '#C4B5FD' : C.muted, borderRadius: 10, padding: '9px 0', fontSize: 12, fontWeight: 600, cursor: 'pointer', marginBottom: 16, letterSpacing: '0.01em', boxShadow: plan.popular ? '0 4px 18px rgba(109,40,217,0.45)' : 'none' }}>
+                          {plan.cta}
+                        </button>
+
+                        {/* Divider */}
+                        <div style={{ height: 1, background: plan.popular ? 'rgba(139,92,246,0.2)' : 'rgba(255,255,255,0.06)', marginBottom: 13 }} />
+
+                        {/* Features */}
+                        <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 8, flex: 1 }}>
+                          {plan.features.map(f => (
+                            <li key={f} style={{ display: 'flex', alignItems: 'center', gap: 7, fontSize: 11.5, color: plan.popular ? 'rgba(224,213,255,0.8)' : C.muted, lineHeight: 1.3 }}>
+                              <PlanCheck accent={plan.popular} />
+                              {f}
+                            </li>
+                          ))}
+                        </ul>
                       </div>
-                      <p style={{ fontSize: 11, color: C.muted, lineHeight: 1.4, margin: '0 0 12px' }}>{plan.desc}</p>
-                      <button type="button" onClick={() => setSelectedPlan(plan.id)}
-                        style={{ width: '100%', background: plan.popular ? C.accent : 'transparent', border: `1px solid ${plan.popular ? C.accent : C.border}`, color: plan.popular ? '#fff' : C.text, borderRadius: 8, padding: '8px 6px', fontSize: 11, fontWeight: 600, cursor: 'pointer', marginBottom: 12 }}>
-                        {plan.cta}
-                      </button>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
-                        <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.08)' }} />
-                        <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.1em', color: C.muted, textTransform: 'uppercase' }}>Features</span>
-                        <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.08)' }} />
-                      </div>
-                      <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 5 }}>
-                        {plan.features.map(f => (
-                          <li key={f} style={{ display: 'flex', alignItems: 'flex-start', gap: 5, fontSize: 11, color: C.muted, lineHeight: 1.3 }}>
-                            <span style={{ color: '#4ade80', flexShrink: 0, fontSize: 11 }}>✓</span>{f}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  ))}
+                    )
+                  })}
                 </div>
 
-                {/* Founders special offer */}
-                <div style={{ background: 'rgba(109,40,217,0.1)', border: '1px solid rgba(109,40,217,0.35)', borderRadius: 10, padding: '12px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginBottom: 20 }}>
+                {/* Founders strip */}
+                <div style={{ position: 'relative', background: 'rgba(109,40,217,0.06)', border: '1px solid rgba(109,40,217,0.18)', borderRadius: 14, padding: '13px 18px 13px 22px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, marginBottom: 18, overflow: 'hidden' }}>
+                  <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: 3, background: 'linear-gradient(180deg, #7C3AED 0%, #4C1D95 100%)' }} />
                   <div>
-                    <p style={{ fontSize: 12, fontWeight: 700, color: C.accent, margin: '0 0 2px' }}>⭐ FOUNDERS — C$29/mo forever</p>
-                    <p style={{ fontSize: 11, color: C.muted, margin: 0 }}>50 spots only. Lock in Pro features at half price, permanently.</p>
+                    <p style={{ fontSize: 13, fontWeight: 700, color: '#C4B5FD', margin: '0 0 2px' }}>Founders rate — C$29/mo, locked in forever</p>
+                    <p style={{ fontSize: 11, color: C.muted, margin: 0 }}>Pro features at half price. 50 spots remaining.</p>
                   </div>
                   <button type="button" onClick={() => setSelectedPlan('founders')}
-                    style={{ background: selectedPlan === 'founders' ? C.accent : 'transparent', border: `1px solid ${C.accent}`, color: selectedPlan === 'founders' ? '#fff' : C.accent, borderRadius: 8, padding: '7px 14px', fontSize: 12, fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap' }}>
-                    {selectedPlan === 'founders' ? '✓ Selected' : 'Claim →'}
+                    style={{ flexShrink: 0, background: selectedPlan === 'founders' ? 'linear-gradient(135deg, #7C3AED, #5B21B6)' : 'transparent', border: '1px solid rgba(124,58,237,0.5)', color: selectedPlan === 'founders' ? '#fff' : '#A78BFA', borderRadius: 9, padding: '7px 15px', fontSize: 12, fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap' }}>
+                    {selectedPlan === 'founders' ? '✓ Claimed' : 'Claim spot'}
                   </button>
                 </div>
 
-                {error && <div style={{ background: 'rgba(248,113,113,0.08)', border: '1px solid rgba(248,113,113,0.25)', borderRadius: 10, padding: '12px 14px', color: C.error, fontSize: 13, lineHeight: 1.5, marginBottom: 16 }}>{error}</div>}
+                {error && <div style={{ background: 'rgba(248,113,113,0.07)', border: '1px solid rgba(248,113,113,0.2)', borderRadius: 10, padding: '11px 14px', color: C.error, fontSize: 13, marginBottom: 14 }}>{error}</div>}
 
-                <div style={{ display: 'flex', gap: 12 }}>
-                  <button type="button" onClick={() => setStep(2)} style={{ flex: 1, background: C.surface2, color: C.muted, border: `1px solid ${C.border}`, borderRadius: 12, padding: '14px', fontSize: 15, fontWeight: 600, cursor: 'pointer' }}>← Back</button>
+                <div style={{ display: 'flex', gap: 10 }}>
+                  <button type="button" onClick={() => setStep(2)} style={{ flexShrink: 0, background: 'transparent', color: C.muted, border: `1px solid ${C.border}`, borderRadius: 12, padding: '13px 18px', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>← Back</button>
                   <button type="button" disabled={loading} onClick={async () => {
                     setError(null); setLoading(true)
                     try {
@@ -485,8 +517,8 @@ export default function Register() {
                       setError(err instanceof Error ? err.message : 'Registration failed')
                     } finally { setLoading(false) }
                   }}
-                    style={{ flex: 2, background: loading ? C.surface2 : C.submitBg, color: loading ? C.muted : C.submitText, border: 'none', borderRadius: 12, padding: '14px', fontSize: 15, fontWeight: 600, cursor: loading ? 'default' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
-                    {loading ? <><Spinner />Creating account…</> : <>Get Started <ArrowRightIcon /></>}
+                    style={{ flex: 1, background: loading ? C.surface2 : 'linear-gradient(135deg, #7C3AED 0%, #5B21B6 100%)', color: loading ? C.muted : '#fff', border: 'none', borderRadius: 12, padding: '13px', fontSize: 14, fontWeight: 700, cursor: loading ? 'default' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, boxShadow: loading ? 'none' : '0 4px 22px rgba(109,40,217,0.38)', letterSpacing: '-0.01em' }}>
+                    {loading ? <><Spinner />Creating account…</> : `Continue with ${PRICING.find(p => p.id === selectedPlan)?.name ?? 'Founders'} →`}
                   </button>
                 </div>
               </>
@@ -515,3 +547,11 @@ function DownloadIcon() { return <svg width="14" height="14" viewBox="0 0 24 24"
 function GoogleIcon() { return <svg width="16" height="16" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" /><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" /><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" /><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" /></svg> }
 function AppleIcon() { return <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z" /></svg> }
 function Spinner() { return <svg width="15" height="15" viewBox="0 0 24 24" fill="none" style={{ animation: 'spin 0.8s linear infinite' }}><style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2.5" strokeOpacity="0.2" /><path d="M12 2a10 10 0 0110 10" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" /></svg> }
+function PlanCheck({ accent }: { accent?: boolean }) {
+  return (
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" style={{ flexShrink: 0 }}>
+      <circle cx="12" cy="12" r="10" fill={accent ? 'rgba(124,58,237,0.28)' : 'rgba(255,255,255,0.06)'} />
+      <path d="M8 12.5l2.5 2.5 5.5-5.5" stroke={accent ? '#A78BFA' : 'rgba(255,255,255,0.35)'} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+}
