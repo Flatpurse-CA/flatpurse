@@ -3,9 +3,18 @@ import { useNavigate } from 'react-router-dom'
 import { palette, useIsMobile, type Mode } from '../lib/auth-ui'
 
 const steps = [
-  { n: 1, label: 'Sign up your account' },
-  { n: 2, label: 'Set up your workspace' },
-  { n: 3, label: 'Set up your profile' },
+  { n: 1, label: 'Create your account' },
+  { n: 2, label: 'Set up your shop' },
+  { n: 3, label: 'Choose your plan' },
+]
+
+const BUSINESS_TYPES = ['Barbershop','Hair Salon','Nail Studio','Lash Studio','Brow Bar','Spa/Wellness','Beauty Studio','Multi-service']
+const PROVINCES = ['AB','BC','MB','NB','NL','NS','NT','NU','ON','PE','QC','SK','YT']
+const PLANS = [
+  { id: 'starter', tier: 'STARTER', price: 'Free', sub: 'Forever, no card', features: ['50 appts/mo','1 staff','Booking page','AutoPilot basic','Tap to Pay'] },
+  { id: 'pro',     tier: 'PRO',     price: 'C$49/mo', sub: 'Up to 10 staff', features: ['Unlimited appts','Full AutoPilot','Client Intelligence','SMS + Email','Daily Brief'] },
+  { id: 'founders',tier: 'FOUNDERS',price: 'C$29/mo', sub: '/month forever · limited', features: ['Everything in Pro','Locked for life','50 spots only','Founder access','Early features'] },
+  { id: 'unlimited',tier:'UNLIMITED',price:'C$274/mo', sub: '25+ staff', features: ['Everything in Pro+','Multi-location','Custom integrations','White-glove onboard','SLA guarantee'] },
 ]
 
 export default function Register() {
@@ -22,6 +31,15 @@ export default function Register() {
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  // Desktop step state
+  const [step, setStep] = useState<1|2|3>(1)
+  const [phone, setPhone] = useState('')
+  const [shopName, setShopName] = useState('')
+  const [businessType, setBusinessType] = useState<string|null>(null)
+  const [city, setCity] = useState('')
+  const [province, setProvince] = useState('')
+  const [selectedPlan, setSelectedPlan] = useState('starter')
 
   const containerRef = useRef<HTMLDivElement>(null)
 
@@ -232,17 +250,21 @@ export default function Register() {
   }
 
   /* ── Desktop layout ─────────────────────────────────────────── */
-  const desktopInputStyle: React.CSSProperties = {
-    width: '100%',
-    background: C.inputBg,
-    border: `1px solid ${C.border}`,
-    borderRadius: 10,
-    padding: '13px 14px',
-    color: C.text,
-    fontSize: 15,
-    outline: 'none',
-    transition: 'border-color 0.15s',
+  const di: React.CSSProperties = {
+    width: '100%', background: C.inputBg, border: `1px solid ${C.border}`,
+    borderRadius: 10, padding: '13px 14px', color: C.text, fontSize: 15,
+    outline: 'none', transition: 'border-color 0.15s',
   }
+  const lbl: React.CSSProperties = { display: 'block', color: C.muted, fontSize: 13, fontWeight: 500, marginBottom: 8 }
+  const onF = (e: React.FocusEvent<HTMLInputElement | HTMLSelectElement>) => (e.target.style.borderColor = C.accent)
+  const onB = (e: React.FocusEvent<HTMLInputElement | HTMLSelectElement>) => (e.target.style.borderColor = C.border)
+
+  const STEP_HEADING = ['Create an Account', 'Set Up Your Shop', 'Choose Your Plan']
+  const STEP_SUB = [
+    'Enter your personal data to create your account.',
+    'Tell us a bit about your business.',
+    'Start free and upgrade anytime.',
+  ]
 
   const topBar = (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', padding: '20px 32px', gap: 10 }}>
@@ -256,66 +278,10 @@ export default function Register() {
     </div>
   )
 
-  const desktopForm = (
-    <form onSubmit={handleSubmit}>
-      <div style={{ display: 'flex', gap: 12, marginBottom: 18 }}>
-        <div style={{ flex: 1 }}>
-          <label style={{ display: 'block', color: C.muted, fontSize: 13, fontWeight: 500, marginBottom: 8 }}>First Name</label>
-          <input type="text" autoComplete="given-name" required value={firstName} onChange={e => setFirstName(e.target.value)} placeholder="eg. John" style={desktopInputStyle} onFocus={e => (e.target.style.borderColor = C.accent)} onBlur={e => (e.target.style.borderColor = C.border)} />
-        </div>
-        <div style={{ flex: 1 }}>
-          <label style={{ display: 'block', color: C.muted, fontSize: 13, fontWeight: 500, marginBottom: 8 }}>Last Name</label>
-          <input type="text" autoComplete="family-name" required value={lastName} onChange={e => setLastName(e.target.value)} placeholder="eg. Francisco" style={desktopInputStyle} onFocus={e => (e.target.style.borderColor = C.accent)} onBlur={e => (e.target.style.borderColor = C.border)} />
-        </div>
-      </div>
-      <div style={{ marginBottom: 18 }}>
-        <label style={{ display: 'block', color: C.muted, fontSize: 13, fontWeight: 500, marginBottom: 8 }}>Email</label>
-        <input type="email" autoComplete="email" required value={email} onChange={e => setEmail(e.target.value)} placeholder="eg. johnfrans@gmail.com" style={desktopInputStyle} onFocus={e => (e.target.style.borderColor = C.accent)} onBlur={e => (e.target.style.borderColor = C.border)} />
-      </div>
-      <div>
-        <label style={{ display: 'block', color: C.muted, fontSize: 13, fontWeight: 500, marginBottom: 8 }}>Password</label>
-        <div style={{ position: 'relative' }}>
-          <input type={showPassword ? 'text' : 'password'} autoComplete="new-password" required value={password} onChange={e => setPassword(e.target.value)} placeholder="Enter your password" style={{ ...desktopInputStyle, paddingRight: 44 }} onFocus={e => (e.target.style.borderColor = C.accent)} onBlur={e => (e.target.style.borderColor = C.border)} />
-          <button type="button" tabIndex={-1} onClick={() => setShowPassword(v => !v)} style={{ position: 'absolute', right: 14, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: C.muted, display: 'flex', alignItems: 'center', padding: 4 }}>
-            <EyeIcon open={showPassword} />
-          </button>
-        </div>
-        <p style={{ color: C.muted, fontSize: 12, marginTop: 6 }}>Must be at least 8 characters.</p>
-      </div>
-      {error && (
-        <div style={{ background: mode === 'dark' ? 'rgba(248,113,113,0.08)' : 'rgba(220,38,38,0.06)', border: `1px solid ${mode === 'dark' ? 'rgba(248,113,113,0.25)' : 'rgba(220,38,38,0.2)'}`, borderRadius: 10, padding: '12px 14px', color: C.error, fontSize: 13, lineHeight: 1.5, marginTop: 16 }}>{error}</div>
-      )}
-      <button type="submit" disabled={loading} style={{ width: '100%', marginTop: 26, background: loading ? C.surface2 : C.submitBg, color: loading ? C.muted : C.submitText, border: 'none', borderRadius: 12, padding: '14px', fontSize: 15, fontWeight: 600, cursor: loading ? 'default' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
-        {loading ? <><Spinner />Creating account…</> : 'Sign Up'}
-      </button>
-      <p style={{ color: C.muted, fontSize: 13, textAlign: 'center', marginTop: 20 }}>
-        Already have an account?{' '}
-        <span onClick={() => navigate('/login')} style={{ color: C.accent, fontWeight: 600, cursor: 'pointer' }}>Log in</span>
-      </p>
-    </form>
-  )
-
-  const desktopSocials = (
-    <>
-      <div style={{ display: 'flex', gap: 12, marginBottom: 24 }}>
-        {[{ icon: <GoogleIcon />, label: 'Google' }, { icon: <AppleIcon />, label: 'Apple' }].map(({ icon, label }) => (
-          <button key={label} type="button" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, background: C.socialBg, border: `1px solid ${C.border}`, borderRadius: 10, padding: '12px 16px', color: C.text, fontSize: 14, fontWeight: 500, cursor: 'pointer' }}>
-            {icon}{label}
-          </button>
-        ))}
-      </div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
-        <div style={{ flex: 1, height: 1, background: C.border }} />
-        <span style={{ color: C.muted, fontSize: 13 }}>Or</span>
-        <div style={{ flex: 1, height: 1, background: C.border }} />
-      </div>
-    </>
-  )
-
   return (
     <div style={{ display: 'flex', minHeight: '100vh', background: C.bg, fontFamily: "'DM Sans', system-ui, sans-serif", colorScheme: mode, transition: 'background 0.2s' }}>
 
-      {/* Left panel */}
+      {/* Left panel — unchanged */}
       <div style={{ width: '45%', minWidth: 420, position: 'relative', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', padding: '48px 44px', overflow: 'hidden' }}>
         <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at 60% 10%, #7C3AED 0%, #4C1D95 35%, #1A0A2E 65%, #09090B 100%)', borderRadius: 20, margin: 12 }} />
         <div style={{ position: 'absolute', inset: 0, margin: 12, borderRadius: 20, backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E")` }} />
@@ -327,9 +293,9 @@ export default function Register() {
           <h2 style={{ color: '#fff', fontSize: 30, fontWeight: 700, letterSpacing: '-0.03em', lineHeight: 1.2, marginBottom: 32 }}>Get Started<br />with Us</h2>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             {steps.map((s, i) => (
-              <div key={s.n} style={{ display: 'flex', alignItems: 'center', gap: 14, background: i === 0 ? C.cardActiveBg : C.cardBg, border: i === 0 ? 'none' : `1px solid ${C.cardBorder}`, backdropFilter: 'blur(12px)', borderRadius: 14, padding: '13px 18px' }}>
-                <span style={{ width: 26, height: 26, borderRadius: '50%', flexShrink: 0, background: i === 0 ? C.cardActiveNumBg : 'rgba(255,255,255,0.15)', color: i === 0 ? C.cardActiveNum : 'rgba(255,255,255,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700 }}>{s.n}</span>
-                <span style={{ fontSize: 14, fontWeight: 500, color: i === 0 ? C.cardActiveText : 'rgba(255,255,255,0.7)' }}>{s.label}</span>
+              <div key={s.n} style={{ display: 'flex', alignItems: 'center', gap: 14, background: i === step - 1 ? C.cardActiveBg : C.cardBg, border: i === step - 1 ? 'none' : `1px solid ${C.cardBorder}`, backdropFilter: 'blur(12px)', borderRadius: 14, padding: '13px 18px' }}>
+                <span style={{ width: 26, height: 26, borderRadius: '50%', flexShrink: 0, background: i === step - 1 ? C.cardActiveNumBg : 'rgba(255,255,255,0.15)', color: i === step - 1 ? C.cardActiveNum : 'rgba(255,255,255,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700 }}>{s.n}</span>
+                <span style={{ fontSize: 14, fontWeight: 500, color: i === step - 1 ? C.cardActiveText : 'rgba(255,255,255,0.7)' }}>{s.label}</span>
               </div>
             ))}
           </div>
@@ -339,12 +305,136 @@ export default function Register() {
       {/* Right panel */}
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
         {topBar}
-        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '32px 40px' }}>
+        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '32px 40px', overflowY: 'auto' }}>
           <div style={{ width: '100%', maxWidth: 400 }}>
-            <h1 style={{ color: C.text, fontSize: 26, fontWeight: 700, letterSpacing: '-0.025em', marginBottom: 8 }}>Sign Up Account</h1>
-            <p style={{ color: C.muted, fontSize: 14, marginBottom: 32, lineHeight: 1.6 }}>Enter your personal data to create your account.</p>
-            {desktopSocials}
-            {desktopForm}
+            <h1 style={{ color: C.text, fontSize: 26, fontWeight: 700, letterSpacing: '-0.025em', marginBottom: 8 }}>{STEP_HEADING[step - 1]}</h1>
+            <p style={{ color: C.muted, fontSize: 14, marginBottom: 32, lineHeight: 1.6 }}>{STEP_SUB[step - 1]}</p>
+
+            {/* ── Step 1 ── */}
+            {step === 1 && (
+              <>
+                <div style={{ display: 'flex', gap: 12, marginBottom: 24 }}>
+                  {[{ icon: <GoogleIcon />, label: 'Google' }, { icon: <AppleIcon />, label: 'Apple' }].map(({ icon, label }) => (
+                    <button key={label} type="button" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, background: C.socialBg, border: `1px solid ${C.border}`, borderRadius: 10, padding: '12px 16px', color: C.text, fontSize: 14, fontWeight: 500, cursor: 'pointer' }}>
+                      {icon}{label}
+                    </button>
+                  ))}
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
+                  <div style={{ flex: 1, height: 1, background: C.border }} />
+                  <span style={{ color: C.muted, fontSize: 13 }}>Or</span>
+                  <div style={{ flex: 1, height: 1, background: C.border }} />
+                </div>
+
+                <div style={{ display: 'flex', gap: 12, marginBottom: 18 }}>
+                  <div style={{ flex: 1 }}>
+                    <label style={lbl}>First Name</label>
+                    <input type="text" autoComplete="given-name" value={firstName} onChange={e => setFirstName(e.target.value)} placeholder="eg. John" style={di} onFocus={onF} onBlur={onB} />
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <label style={lbl}>Last Name</label>
+                    <input type="text" autoComplete="family-name" value={lastName} onChange={e => setLastName(e.target.value)} placeholder="eg. Francisco" style={di} onFocus={onF} onBlur={onB} />
+                  </div>
+                </div>
+                <div style={{ marginBottom: 18 }}>
+                  <label style={lbl}>Email</label>
+                  <input type="email" autoComplete="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="eg. johnfrans@gmail.com" style={di} onFocus={onF} onBlur={onB} />
+                </div>
+                <div style={{ marginBottom: 18 }}>
+                  <label style={lbl}>Phone Number</label>
+                  <input type="tel" autoComplete="tel" value={phone} onChange={e => setPhone(e.target.value)} placeholder="eg. +1 780-555-0123" style={di} onFocus={onF} onBlur={onB} />
+                </div>
+                <div style={{ marginBottom: 18 }}>
+                  <label style={lbl}>Password</label>
+                  <div style={{ position: 'relative' }}>
+                    <input type={showPassword ? 'text' : 'password'} autoComplete="new-password" value={password} onChange={e => setPassword(e.target.value)} placeholder="Enter your password" style={{ ...di, paddingRight: 44 }} onFocus={onF} onBlur={onB} />
+                    <button type="button" tabIndex={-1} onClick={() => setShowPassword(v => !v)} style={{ position: 'absolute', right: 14, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: C.muted, display: 'flex', alignItems: 'center', padding: 4 }}>
+                      <EyeIcon open={showPassword} />
+                    </button>
+                  </div>
+                  <p style={{ color: C.muted, fontSize: 12, marginTop: 6 }}>Must be at least 8 characters.</p>
+                </div>
+                {error && <div style={{ background: mode === 'dark' ? 'rgba(248,113,113,0.08)' : 'rgba(220,38,38,0.06)', border: `1px solid ${mode === 'dark' ? 'rgba(248,113,113,0.25)' : 'rgba(220,38,38,0.2)'}`, borderRadius: 10, padding: '12px 14px', color: C.error, fontSize: 13, lineHeight: 1.5, marginBottom: 16 }}>{error}</div>}
+                <button type="button" onClick={() => setStep(2)} style={{ width: '100%', background: C.submitBg, color: C.submitText, border: 'none', borderRadius: 12, padding: '14px', fontSize: 15, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+                  Next Step <ArrowRightIcon />
+                </button>
+                <p style={{ color: C.muted, fontSize: 13, textAlign: 'center', marginTop: 20 }}>
+                  Already have an account?{' '}
+                  <span onClick={() => navigate('/login')} style={{ color: C.accent, fontWeight: 600, cursor: 'pointer' }}>Log in</span>
+                </p>
+              </>
+            )}
+
+            {/* ── Step 2 ── */}
+            {step === 2 && (
+              <>
+                <div style={{ marginBottom: 18 }}>
+                  <label style={lbl}>Shop Name</label>
+                  <input type="text" value={shopName} onChange={e => setShopName(e.target.value)} placeholder="eg. Compound Cut Club" style={di} onFocus={onF} onBlur={onB} />
+                </div>
+                <div style={{ marginBottom: 18 }}>
+                  <label style={lbl}>Business Type</label>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                    {BUSINESS_TYPES.map(t => (
+                      <button key={t} type="button" onClick={() => setBusinessType(t === businessType ? null : t)}
+                        style={{ background: businessType === t ? C.accent : C.surface2, color: businessType === t ? '#fff' : C.text, border: `1px solid ${businessType === t ? C.accent : C.border}`, borderRadius: 8, padding: '7px 14px', fontSize: 13, fontWeight: 500, cursor: 'pointer', transition: 'all 0.15s' }}>
+                        {t}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div style={{ display: 'flex', gap: 12, marginBottom: 18 }}>
+                  <div style={{ flex: 1 }}>
+                    <label style={lbl}>City</label>
+                    <input type="text" value={city} onChange={e => setCity(e.target.value)} placeholder="eg. Edmonton" style={di} onFocus={onF} onBlur={onB} />
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <label style={lbl}>Province</label>
+                    <select value={province} onChange={e => setProvince(e.target.value)} onFocus={onF} onBlur={onB}
+                      style={{ ...di, cursor: 'pointer', appearance: 'none' as React.CSSProperties['appearance'], backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24'%3E%3Cpath d='M6 9l6 6 6-6' stroke='%23888' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 12px center', paddingRight: 36 }}>
+                      <option value="">Select…</option>
+                      {PROVINCES.map(p => <option key={p} value={p}>{p}</option>)}
+                    </select>
+                  </div>
+                </div>
+                <div style={{ display: 'flex', gap: 12, marginTop: 26 }}>
+                  <button type="button" onClick={() => setStep(1)} style={{ flex: 1, background: C.surface2, color: C.muted, border: `1px solid ${C.border}`, borderRadius: 12, padding: '14px', fontSize: 15, fontWeight: 600, cursor: 'pointer' }}>← Back</button>
+                  <button type="button" onClick={() => setStep(3)} style={{ flex: 2, background: C.submitBg, color: C.submitText, border: 'none', borderRadius: 12, padding: '14px', fontSize: 15, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+                    Next Step <ArrowRightIcon />
+                  </button>
+                </div>
+              </>
+            )}
+
+            {/* ── Step 3: Plans ── */}
+            {step === 3 && (
+              <>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 24 }}>
+                  {PLANS.map(plan => (
+                    <div key={plan.id} onClick={() => setSelectedPlan(plan.id)}
+                      style={{ background: C.surface, border: `1.5px solid ${selectedPlan === plan.id ? C.accent : C.border}`, borderRadius: 14, padding: '18px', cursor: 'pointer', transition: 'border-color 0.15s' }}>
+                      <p style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: selectedPlan === plan.id ? C.accent : C.muted, margin: '0 0 8px' }}>{plan.tier}</p>
+                      <p style={{ fontSize: 20, fontWeight: 800, color: C.text, margin: '0 0 2px' }}>{plan.price}</p>
+                      <p style={{ fontSize: 11, color: C.muted, margin: '0 0 12px' }}>{plan.sub}</p>
+                      <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 6 }}>
+                        {plan.features.map(f => (
+                          <li key={f} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: C.muted }}>
+                            <span style={{ color: C.accent, flexShrink: 0 }}>✓</span>{f}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ))}
+                </div>
+                <div style={{ display: 'flex', gap: 12 }}>
+                  <button type="button" onClick={() => setStep(2)} style={{ flex: 1, background: C.surface2, color: C.muted, border: `1px solid ${C.border}`, borderRadius: 12, padding: '14px', fontSize: 15, fontWeight: 600, cursor: 'pointer' }}>← Back</button>
+                  <button type="button" onClick={async () => { setLoading(true); await new Promise(r => setTimeout(r, 800)); navigate('/app') }} disabled={loading}
+                    style={{ flex: 2, background: loading ? C.surface2 : C.submitBg, color: loading ? C.muted : C.submitText, border: 'none', borderRadius: 12, padding: '14px', fontSize: 15, fontWeight: 600, cursor: loading ? 'default' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+                    {loading ? <><Spinner />Setting up…</> : <>Get Started <ArrowRightIcon /></>}
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         </div>
       </div>
