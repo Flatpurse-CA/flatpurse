@@ -5,10 +5,24 @@ interface AuthUser extends Me {
   token: string
 }
 
+export interface RegisterPayload {
+  firstName: string
+  lastName: string
+  email: string
+  password: string
+  phone: string
+  businessName: string
+  businessType: string
+  city: string
+  province: string
+  plan: string
+}
+
 interface AuthContextValue {
   user: AuthUser | null
   loading: boolean
   login: (email: string, password: string) => Promise<void>
+  register: (data: RegisterPayload) => Promise<void>
   logout: () => void
 }
 
@@ -49,13 +63,35 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     })
   }, [])
 
+  const register = useCallback(async (data: RegisterPayload) => {
+    const res = await api.post<{
+      accessToken: string; success: boolean; errorMessage: string | null;
+      email: string; firstName: string; lastName: string;
+      organizationId: string; businessName: string; businessType: string; accountId: string;
+    }>('/auth/register', data)
+
+    if (!res.success) throw new Error(res.errorMessage || 'Registration failed')
+
+    setToken(res.accessToken)
+    setUser({
+      token: res.accessToken,
+      accountId: res.accountId,
+      email: res.email,
+      firstName: res.firstName,
+      lastName: res.lastName,
+      organizationId: res.organizationId,
+      businessName: res.businessName,
+      businessType: res.businessType,
+    })
+  }, [])
+
   const logout = useCallback(() => {
     clearToken()
     setUser(null)
   }, [])
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout }}>
+    <AuthContext.Provider value={{ user, loading, login, register, logout }}>
       {children}
     </AuthContext.Provider>
   )
