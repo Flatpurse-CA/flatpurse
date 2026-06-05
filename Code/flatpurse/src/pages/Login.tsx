@@ -66,7 +66,7 @@ export default function Login() {
       {/* ── Banner (logo + toggle only) ───────────────────────── */}
       <div style={{
         flexShrink: 0,
-        padding: '16px 24px 28px',
+        padding: '40px 24px 28px',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <img
