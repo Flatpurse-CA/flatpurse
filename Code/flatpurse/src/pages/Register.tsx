@@ -311,6 +311,14 @@ export default function Register() {
       from { opacity:0; transform:translateX(-52px); }
       to   { opacity:1; transform:translateX(0); }
     }
+    @keyframes fp-slide-out-l {
+      from { opacity:1; transform:translateX(0); }
+      to   { opacity:0; transform:translateX(-52px); }
+    }
+    @keyframes fp-slide-out-r {
+      from { opacity:1; transform:translateX(0); }
+      to   { opacity:0; transform:translateX(52px); }
+    }
     @keyframes fp-fade-up {
       from { opacity:0; transform:translateY(20px); }
       to   { opacity:1; transform:translateY(0); }
@@ -397,7 +405,7 @@ export default function Register() {
         </div>
 
         <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '32px 40px', overflowY: 'auto' }}>
-          <div key={step} style={{ width: '100%', maxWidth: step === 3 ? 960 : 400, animation: `${transDir === 1 ? 'fp-slide-in-r' : 'fp-slide-in-l'} 0.42s cubic-bezier(0.16,1,0.3,1) both` }}>
+          <div key={step} style={{ width: '100%', maxWidth: step === 3 ? 960 : 400, animation: transitioning ? `${transDir === 1 ? 'fp-slide-out-l' : 'fp-slide-out-r'} 0.32s cubic-bezier(0.4,0,1,1) forwards` : `${transDir === 1 ? 'fp-slide-in-r' : 'fp-slide-in-l'} 0.42s cubic-bezier(0.16,1,0.3,1) both` }}>
             {/* Step progress dots — steps 2 and 3 */}
             {step > 1 && (
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 28, ...fadeUp(0) }}>
