@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { palette, useIsMobile, type Mode } from '../lib/auth-ui'
@@ -18,9 +18,16 @@ export default function Login() {
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
 
+  const containerRef = useRef<HTMLDivElement>(null)
+
   useEffect(() => {
     if (!isMobile) navigate('/register', { replace: true })
   }, [isMobile, navigate])
+
+  // Focus the wrapper div on mount so iOS doesn't auto-focus the first input
+  useEffect(() => {
+    containerRef.current?.focus()
+  }, [])
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -52,16 +59,20 @@ export default function Login() {
   if (!isMobile) return null
 
   return (
-    <div style={{
-      height: '100dvh',
-      background: mode === 'dark'
-        ? 'radial-gradient(ellipse 140% 55% at 50% 0%, #6D28D9 0%, #4C1D95 30%, #1E0A3C 60%, #09090B 85%)'
-        : C.bg,
-      fontFamily: "'DM Sans', system-ui, sans-serif",
-      colorScheme: mode,
-      display: 'flex',
-      flexDirection: 'column',
-    }}>
+    <div
+      ref={containerRef}
+      tabIndex={-1}
+      style={{
+        height: '100dvh',
+        background: mode === 'dark'
+          ? 'radial-gradient(ellipse 140% 55% at 50% 0%, #6D28D9 0%, #4C1D95 30%, #1E0A3C 60%, #09090B 85%)'
+          : C.bg,
+        fontFamily: "'DM Sans', system-ui, sans-serif",
+        colorScheme: mode,
+        display: 'flex',
+        flexDirection: 'column',
+        outline: 'none',
+      }}>
 
       {/* ── Banner (logo + toggle only) ───────────────────────── */}
       <div style={{
