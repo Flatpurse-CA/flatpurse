@@ -9,6 +9,7 @@ const steps = [
   { n: 3, label: 'Choose your plan' },
 ]
 
+const CAROUSEL_IMGS = ['/sd1.jpg','/sd2.jpg','/sd3.jpg','/sd4.jpg','/sd5.jpg','/sd6.jpg','/sd7.jpg','/sd8.jpg']
 const BUSINESS_TYPES = ['Barbershop','Hair Salon','Nail Studio','Lash Studio','Brow Bar','Spa/Wellness','Beauty Studio','Multi-service']
 const PROVINCES = ['AB','BC','MB','NB','NL','NS','NT','NU','ON','PE','QC','SK','YT']
 const PRICING = [
@@ -72,11 +73,17 @@ export default function Register() {
   const [selectedPlan, setSelectedPlan] = useState('starter')
   const [hoveredPlan, setHoveredPlan] = useState<string | null>(null)
   const [showDownloadModal, setShowDownloadModal] = useState(false)
+  const [carouselIdx, setCarouselIdx] = useState(0)
 
   const containerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     containerRef.current?.focus()
+  }, [])
+
+  useEffect(() => {
+    const id = setInterval(() => setCarouselIdx(i => (i + 1) % CAROUSEL_IMGS.length), 4000)
+    return () => clearInterval(id)
   }, [])
 
   async function handleSubmit(e: React.FormEvent) {
@@ -365,15 +372,28 @@ export default function Register() {
         </div>
       )}
 
-      {/* Left panel — step 1 only (step hasn't changed yet during exit animation) */}
+      {/* Left panel — step 1 only */}
       {step === 1 && (
         <div style={{ width: '45%', minWidth: 420, position: 'relative', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', padding: '48px 44px', overflow: 'hidden', animation: transitioning ? 'fp-panel-out 0.36s cubic-bezier(0.4,0,1,1) forwards' : 'fp-panel-in 0.42s cubic-bezier(0.16,1,0.3,1) both' }}>
-          <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at 60% 10%, #7C3AED 0%, #4C1D95 35%, #1A0A2E 65%, #09090B 100%)', borderRadius: 20, margin: 12 }} />
-          <div style={{ position: 'absolute', inset: 0, margin: 12, borderRadius: 20, backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E")` }} />
-          <div style={{ position: 'absolute', top: 44, left: 44, zIndex: 1 }}>
-            <img src="/Flatpurse flow .svg" alt="Flatpurse" style={{ height: 36, width: 'auto', filter: mode === 'dark' ? 'brightness(0) invert(1)' : 'none' }} />
+
+          {/* Photo carousel — beneath gradient */}
+          {CAROUSEL_IMGS.map((src, i) => (
+            <img key={src} src={src} alt="" style={{ position: 'absolute', inset: 0, margin: 12, borderRadius: 20, width: 'calc(100% - 24px)', height: 'calc(100% - 24px)', objectFit: 'cover', objectPosition: 'center top', opacity: i === carouselIdx ? 1 : 0, transition: 'opacity 1.2s ease', zIndex: 0 }} />
+          ))}
+
+          {/* Gradient overlay */}
+          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(160deg, rgba(109,40,217,0.82) 0%, rgba(76,29,149,0.5) 45%, rgba(9,9,11,0.9) 100%)', borderRadius: 20, margin: 12, zIndex: 1 }} />
+
+          {/* Noise texture */}
+          <div style={{ position: 'absolute', inset: 0, margin: 12, borderRadius: 20, zIndex: 2, backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E")` }} />
+
+          {/* Logo */}
+          <div style={{ position: 'absolute', top: 44, left: 44, zIndex: 3 }}>
+            <img src="/Flatpurse flow .svg" alt="Flatpurse" style={{ height: 36, width: 'auto', filter: 'brightness(0) invert(1)' }} />
           </div>
-          <div style={{ position: 'relative', zIndex: 1 }}>
+
+          {/* Content */}
+          <div style={{ position: 'relative', zIndex: 3 }}>
             <p style={{ color: 'rgba(255,255,255,0.55)', fontSize: 12, fontWeight: 500, letterSpacing: '0.07em', textTransform: 'uppercase', marginBottom: 10 }}>Get Started</p>
             <h2 style={{ color: '#fff', fontSize: 30, fontWeight: 700, letterSpacing: '-0.03em', lineHeight: 1.2, marginBottom: 32 }}>Get Started<br />with Us</h2>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
@@ -382,6 +402,12 @@ export default function Register() {
                   <span style={{ width: 26, height: 26, borderRadius: '50%', flexShrink: 0, background: i === step - 1 ? C.cardActiveNumBg : 'rgba(255,255,255,0.15)', color: i === step - 1 ? C.cardActiveNum : 'rgba(255,255,255,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700 }}>{s.n}</span>
                   <span style={{ fontSize: 14, fontWeight: 500, color: i === step - 1 ? C.cardActiveText : 'rgba(255,255,255,0.7)' }}>{s.label}</span>
                 </div>
+              ))}
+            </div>
+            {/* Carousel dot indicators */}
+            <div style={{ display: 'flex', gap: 5, marginTop: 24 }}>
+              {CAROUSEL_IMGS.map((_, i) => (
+                <button key={i} onClick={() => setCarouselIdx(i)} style={{ width: i === carouselIdx ? 18 : 6, height: 6, borderRadius: 100, background: i === carouselIdx ? '#fff' : 'rgba(255,255,255,0.3)', border: 'none', cursor: 'pointer', padding: 0, transition: 'all 0.3s ease' }} />
               ))}
             </div>
           </div>
