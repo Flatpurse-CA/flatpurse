@@ -63,19 +63,23 @@ export default function Register() {
         flexDirection: 'column',
       }}>
 
-        {/* Gradient banner */}
+        {/* Banner */}
         <div style={{
           flexShrink: 0,
-          background: `linear-gradient(180deg, #6D28D9 0%, #4C1D95 40%, #1E0A3C 70%, ${C.bg} 100%)`,
+          background: mode === 'dark'
+            ? `linear-gradient(180deg, #6D28D9 0%, #4C1D95 40%, #1E0A3C 70%, ${C.bg} 100%)`
+            : C.bg,
           padding: '16px 24px 28px',
         }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <img src="/Flatpurse flow .svg" alt="Flatpurse"
-              style={{ height: 28, width: 'auto', filter: 'brightness(0) invert(1)' }} />
+              style={{ height: 28, width: 'auto', filter: mode === 'dark' ? 'brightness(0) invert(1)' : 'none' }} />
             <button onClick={() => setMode(m => m === 'dark' ? 'light' : 'dark')} style={{
               width: 36, height: 36, borderRadius: 10,
-              background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.2)',
-              color: '#fff', cursor: 'pointer',
+              background: mode === 'dark' ? 'rgba(255,255,255,0.12)' : C.surface2,
+              border: mode === 'dark' ? '1px solid rgba(255,255,255,0.2)' : `1px solid ${C.border}`,
+              color: mode === 'dark' ? '#fff' : C.muted,
+              cursor: 'pointer',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>
               {mode === 'dark' ? <SunIcon /> : <MoonIcon />}
