@@ -502,7 +502,7 @@ export default function Register() {
                         onClick={() => setSelectedPlan(plan.id)}
                         onMouseEnter={() => setHoveredPlan(plan.id)}
                         onMouseLeave={() => setHoveredPlan(null)}
-                        style={{ position: 'relative', background: 'rgba(255,255,255,0.03)', border: `1px solid ${sel ? 'rgba(124,58,237,0.6)' : 'rgba(255,255,255,0.08)'}`, borderRadius: 18, padding: '22px 18px 20px', cursor: 'pointer', overflow: 'hidden', display: 'flex', flexDirection: 'column', transition: 'border-color 0.25s', boxShadow: sel ? '0 0 0 1px rgba(124,58,237,0.3), 0 16px 48px rgba(109,40,217,0.25)' : 'none' }}>
+                        style={{ position: 'relative', background: 'rgba(255,255,255,0.03)', border: `1px solid ${sel ? 'rgba(124,58,237,0.6)' : 'rgba(255,255,255,0.08)'}`, borderRadius: 0, padding: '22px 18px 20px', cursor: 'pointer', overflow: 'hidden', display: 'flex', flexDirection: 'column', transition: 'border-color 0.25s', boxShadow: sel ? '0 0 0 1px rgba(124,58,237,0.3), 0 16px 48px rgba(109,40,217,0.25)' : 'none' }}>
 
                         {/* Bottom-bloom gradient overlay */}
                         <div style={{ position: 'absolute', inset: 0, background: plan.founders
