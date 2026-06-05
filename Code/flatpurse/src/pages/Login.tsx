@@ -130,7 +130,7 @@ export default function Login() {
             alt="Flatpurse"
             style={{
               height: 36, width: 'auto',
-              filter: 'brightness(0) invert(1)',
+              filter: mode === 'dark' ? 'brightness(0) invert(1)' : 'none',
             }}
           />
         </div>
