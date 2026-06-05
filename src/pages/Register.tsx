@@ -543,7 +543,22 @@ export default function Register() {
                               setError(err instanceof Error ? err.message : 'Registration failed')
                             } finally { setLoading(false) }
                           }}
-                            style={{ width: '100%', background: loading && selectedPlan === plan.id ? C.surface2 : lit ? 'rgba(109,40,217,0.35)' : 'rgba(255,255,255,0.05)', border: `1px solid ${lit ? 'rgba(139,92,246,0.55)' : 'rgba(255,255,255,0.1)'}`, color: lit ? '#E9D5FF' : C.muted, borderRadius: 10, padding: '10px 0', fontSize: 12, fontWeight: 600, cursor: loading ? 'default' : 'pointer', marginBottom: 16, letterSpacing: '0.01em', transition: 'all 0.25s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+                            style={{
+                              width: '100%',
+                              background: loading && selectedPlan === plan.id
+                                ? C.surface2
+                                : lit
+                                  ? plan.founders ? 'rgba(161,98,7,0.45)' : 'rgba(109,40,217,0.35)'
+                                  : 'rgba(255,255,255,0.05)',
+                              border: `1px solid ${lit
+                                ? plan.founders ? 'rgba(217,160,30,0.65)' : 'rgba(139,92,246,0.55)'
+                                : 'rgba(255,255,255,0.1)'}`,
+                              color: lit ? plan.founders ? '#FDE68A' : '#E9D5FF' : C.muted,
+                              borderRadius: 10, padding: '10px 0', fontSize: 12, fontWeight: 600,
+                              cursor: loading ? 'default' : 'pointer', marginBottom: 16,
+                              letterSpacing: '0.01em', transition: 'all 0.25s',
+                              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+                            }}>
                             {loading && selectedPlan === plan.id ? <><Spinner />Creating…</> : plan.cta}
                           </button>
 
