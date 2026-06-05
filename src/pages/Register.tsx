@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { palette, useIsMobile, type Mode } from '../lib/auth-ui'
+import { useAuth } from '../context/AuthContext'
 
 const steps = [
   { n: 1, label: 'Create your account' },
@@ -10,15 +11,30 @@ const steps = [
 
 const BUSINESS_TYPES = ['Barbershop','Hair Salon','Nail Studio','Lash Studio','Brow Bar','Spa/Wellness','Beauty Studio','Multi-service']
 const PROVINCES = ['AB','BC','MB','NB','NL','NS','NT','NU','ON','PE','QC','SK','YT']
-const PLANS = [
-  { id: 'starter', tier: 'STARTER', price: 'Free', sub: 'Forever, no card', features: ['50 appts/mo','1 staff','Booking page','AutoPilot basic','Tap to Pay'] },
-  { id: 'pro',     tier: 'PRO',     price: 'C$49/mo', sub: 'Up to 10 staff', features: ['Unlimited appts','Full AutoPilot','Client Intelligence','SMS + Email','Daily Brief'] },
-  { id: 'founders',tier: 'FOUNDERS',price: 'C$29/mo', sub: '/month forever · limited', features: ['Everything in Pro','Locked for life','50 spots only','Founder access','Early features'] },
-  { id: 'unlimited',tier:'UNLIMITED',price:'C$274/mo', sub: '25+ staff', features: ['Everything in Pro+','Multi-location','Custom integrations','White-glove onboard','SLA guarantee'] },
+const PRICING = [
+  {
+    id: 'starter', name: 'Starter', price: '$0', period: '/month',
+    desc: 'Ideal for solo operators and small salons',
+    cta: 'Start for Free', popular: false,
+    features: ['50 appts/mo', '1 staff', 'Booking page', 'AutoPilot basic', 'Tap to Pay'],
+  },
+  {
+    id: 'pro', name: 'Pro', price: 'C$49', period: '/month',
+    desc: 'Best for growing salons and studios',
+    cta: 'Sign Up with Pro', popular: true,
+    features: ['Unlimited appts', 'Full AutoPilot', 'Client Intelligence', 'SMS + Email', 'Daily Brief'],
+  },
+  {
+    id: 'unlimited', name: 'Unlimited', price: 'C$274', period: '/month',
+    desc: 'For large studios and multi-location shops',
+    cta: 'Sign Up with Unlimited', popular: false,
+    features: ['Everything in Pro+', 'Multi-location', 'Custom integrations', 'White-glove onboard', 'SLA guarantee'],
+  },
 ]
 
 export default function Register() {
   const navigate = useNavigate()
+  const { register } = useAuth()
   const isMobile = useIsMobile()
 
   const [mode, setMode] = useState<Mode>('dark')
@@ -306,7 +322,7 @@ export default function Register() {
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
         {topBar}
         <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '32px 40px', overflowY: 'auto' }}>
-          <div style={{ width: '100%', maxWidth: 400 }}>
+          <div style={{ width: '100%', maxWidth: step === 3 ? 660 : 400 }}>
             <h1 style={{ color: C.text, fontSize: 26, fontWeight: 700, letterSpacing: '-0.025em', marginBottom: 8 }}>{STEP_HEADING[step - 1]}</h1>
             <p style={{ color: C.muted, fontSize: 14, marginBottom: 32, lineHeight: 1.6 }}>{STEP_SUB[step - 1]}</p>
 
@@ -406,31 +422,71 @@ export default function Register() {
               </>
             )}
 
-            {/* ── Step 3: Plans ── */}
+            {/* ── Step 3: Pricing ── */}
             {step === 3 && (
               <>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 24 }}>
-                  {PLANS.map(plan => (
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10, marginBottom: 12 }}>
+                  {PRICING.map(plan => (
                     <div key={plan.id} onClick={() => setSelectedPlan(plan.id)}
-                      style={{ background: C.surface, border: `1.5px solid ${selectedPlan === plan.id ? C.accent : C.border}`, borderRadius: 14, padding: '18px', cursor: 'pointer', transition: 'border-color 0.15s' }}>
-                      <p style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: selectedPlan === plan.id ? C.accent : C.muted, margin: '0 0 8px' }}>{plan.tier}</p>
-                      <p style={{ fontSize: 20, fontWeight: 800, color: C.text, margin: '0 0 2px' }}>{plan.price}</p>
-                      <p style={{ fontSize: 11, color: C.muted, margin: '0 0 12px' }}>{plan.sub}</p>
-                      <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 6 }}>
+                      style={{ position: 'relative', background: plan.popular ? 'rgba(109,40,217,0.18)' : 'rgba(255,255,255,0.04)', border: `1px solid ${selectedPlan === plan.id ? C.accent : plan.popular ? 'rgba(109,40,217,0.5)' : 'rgba(255,255,255,0.1)'}`, borderRadius: 14, padding: '18px 14px', cursor: 'pointer', transition: 'border-color 0.15s' }}>
+                      {plan.popular && (
+                        <div style={{ position: 'absolute', top: -11, left: '50%', transform: 'translateX(-50%)', background: C.accent, color: '#fff', fontSize: 10, fontWeight: 700, padding: '3px 10px', borderRadius: 100, whiteSpace: 'nowrap' }}>
+                          Most Popular
+                        </div>
+                      )}
+                      <p style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: C.muted, margin: '0 0 10px' }}>{plan.name}</p>
+                      <div style={{ display: 'flex', alignItems: 'baseline', gap: 2, marginBottom: 2 }}>
+                        <span style={{ fontSize: 24, fontWeight: 800, color: C.text, lineHeight: 1 }}>{plan.price}</span>
+                        <span style={{ fontSize: 11, color: C.muted }}>{plan.period}</span>
+                      </div>
+                      <p style={{ fontSize: 11, color: C.muted, lineHeight: 1.4, margin: '0 0 12px' }}>{plan.desc}</p>
+                      <button type="button" onClick={() => setSelectedPlan(plan.id)}
+                        style={{ width: '100%', background: plan.popular ? C.accent : 'transparent', border: `1px solid ${plan.popular ? C.accent : C.border}`, color: plan.popular ? '#fff' : C.text, borderRadius: 8, padding: '8px 6px', fontSize: 11, fontWeight: 600, cursor: 'pointer', marginBottom: 12 }}>
+                        {plan.cta}
+                      </button>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
+                        <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.08)' }} />
+                        <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.1em', color: C.muted, textTransform: 'uppercase' }}>Features</span>
+                        <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.08)' }} />
+                      </div>
+                      <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 5 }}>
                         {plan.features.map(f => (
-                          <li key={f} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: C.muted }}>
-                            <span style={{ color: C.accent, flexShrink: 0 }}>✓</span>{f}
+                          <li key={f} style={{ display: 'flex', alignItems: 'flex-start', gap: 5, fontSize: 11, color: C.muted, lineHeight: 1.3 }}>
+                            <span style={{ color: '#4ade80', flexShrink: 0, fontSize: 11 }}>✓</span>{f}
                           </li>
                         ))}
                       </ul>
                     </div>
                   ))}
                 </div>
+
+                {/* Founders special offer */}
+                <div style={{ background: 'rgba(109,40,217,0.1)', border: '1px solid rgba(109,40,217,0.35)', borderRadius: 10, padding: '12px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginBottom: 20 }}>
+                  <div>
+                    <p style={{ fontSize: 12, fontWeight: 700, color: C.accent, margin: '0 0 2px' }}>⭐ FOUNDERS — C$29/mo forever</p>
+                    <p style={{ fontSize: 11, color: C.muted, margin: 0 }}>50 spots only. Lock in Pro features at half price, permanently.</p>
+                  </div>
+                  <button type="button" onClick={() => setSelectedPlan('founders')}
+                    style={{ background: selectedPlan === 'founders' ? C.accent : 'transparent', border: `1px solid ${C.accent}`, color: selectedPlan === 'founders' ? '#fff' : C.accent, borderRadius: 8, padding: '7px 14px', fontSize: 12, fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap' }}>
+                    {selectedPlan === 'founders' ? '✓ Selected' : 'Claim →'}
+                  </button>
+                </div>
+
+                {error && <div style={{ background: 'rgba(248,113,113,0.08)', border: '1px solid rgba(248,113,113,0.25)', borderRadius: 10, padding: '12px 14px', color: C.error, fontSize: 13, lineHeight: 1.5, marginBottom: 16 }}>{error}</div>}
+
                 <div style={{ display: 'flex', gap: 12 }}>
                   <button type="button" onClick={() => setStep(2)} style={{ flex: 1, background: C.surface2, color: C.muted, border: `1px solid ${C.border}`, borderRadius: 12, padding: '14px', fontSize: 15, fontWeight: 600, cursor: 'pointer' }}>← Back</button>
-                  <button type="button" onClick={async () => { setLoading(true); await new Promise(r => setTimeout(r, 800)); navigate('/app') }} disabled={loading}
+                  <button type="button" disabled={loading} onClick={async () => {
+                    setError(null); setLoading(true)
+                    try {
+                      await register({ firstName, lastName, email, password, phone, businessName: shopName, businessType: businessType ?? '', city, province, plan: selectedPlan })
+                      navigate('/app', { replace: true })
+                    } catch (err) {
+                      setError(err instanceof Error ? err.message : 'Registration failed')
+                    } finally { setLoading(false) }
+                  }}
                     style={{ flex: 2, background: loading ? C.surface2 : C.submitBg, color: loading ? C.muted : C.submitText, border: 'none', borderRadius: 12, padding: '14px', fontSize: 15, fontWeight: 600, cursor: loading ? 'default' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
-                    {loading ? <><Spinner />Setting up…</> : <>Get Started <ArrowRightIcon /></>}
+                    {loading ? <><Spinner />Creating account…</> : <>Get Started <ArrowRightIcon /></>}
                   </button>
                 </div>
               </>
