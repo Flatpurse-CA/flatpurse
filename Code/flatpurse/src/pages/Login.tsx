@@ -192,7 +192,6 @@ export default function Login() {
         <div style={{
           display: 'flex', alignItems: 'center', justifyContent: 'flex-end',
           padding: '20px 32px', gap: 10,
-          borderBottom: `1px solid ${C.border}`,
         }}>
           {/* Mode toggle */}
           <button
