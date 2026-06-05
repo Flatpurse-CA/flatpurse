@@ -42,7 +42,7 @@ export default function Login() {
     background: C.inputBg,
     border: `1px solid ${C.border}`,
     borderRadius: 12,
-    padding: '14px 16px',
+    padding: '12px 16px',
     color: C.text,
     fontSize: 15,
     outline: 'none',
@@ -53,35 +53,31 @@ export default function Login() {
   if (!isMobile) return null
 
   return (
-    <div style={{ minHeight: '100vh', background: C.bg, fontFamily: "'DM Sans', system-ui, sans-serif", colorScheme: mode }}>
+    <div style={{
+      height: '100dvh', background: C.bg,
+      fontFamily: "'DM Sans', system-ui, sans-serif",
+      colorScheme: mode,
+      display: 'flex', flexDirection: 'column',
+      overflow: 'hidden',
+    }}>
 
       {/* ── Gradient banner ─────────────────────────────────────── */}
       <div style={{
+        flexShrink: 0,
         background: `linear-gradient(180deg, #6D28D9 0%, #4C1D95 40%, #1E0A3C 70%, ${C.bg} 100%)`,
         padding: '16px 24px 28px',
-        position: 'relative',
       }}>
-        {/* Logo + toggle on same row */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-          <img
-            src="/Flatpurse flow .svg"
-            alt="Flatpurse"
-            style={{ height: 30, width: 'auto', filter: 'brightness(0) invert(1)' }}
-          />
-          <button
-            onClick={() => setMode(m => m === 'dark' ? 'light' : 'dark')}
-            style={{
-              width: 34, height: 34, borderRadius: 8,
-              background: 'rgba(255,255,255,0.12)',
-              border: '1px solid rgba(255,255,255,0.2)',
-              color: '#fff', cursor: 'pointer',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-            }}
-          >
+          <img src="/Flatpurse flow .svg" alt="Flatpurse"
+            style={{ height: 30, width: 'auto', filter: 'brightness(0) invert(1)' }} />
+          <button onClick={() => setMode(m => m === 'dark' ? 'light' : 'dark')} style={{
+            width: 34, height: 34, borderRadius: 8,
+            background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.2)',
+            color: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}>
             {mode === 'dark' ? <SunIcon /> : <MoonIcon />}
           </button>
         </div>
-
         <h1 style={{ color: '#fff', fontSize: 24, fontWeight: 800, letterSpacing: '-0.03em', marginBottom: 4 }}>
           Sign In Account
         </h1>
@@ -90,11 +86,11 @@ export default function Login() {
         </p>
       </div>
 
-      {/* ── Form ────────────────────────────────────────────────── */}
-      <div style={{ padding: '12px 24px 20px' }}>
+      {/* ── Form (fills remaining height) ───────────────────────── */}
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: '14px 24px 0', overflow: 'hidden' }}>
 
         {/* Social */}
-        <div style={{ display: 'flex', gap: 12, marginBottom: 14 }}>
+        <div style={{ display: 'flex', gap: 12, marginBottom: 12 }}>
           {[{ icon: <GoogleIcon />, label: 'Google' }, { icon: <AppleIcon />, label: 'Apple' }].map(({ icon, label }) => (
             <button key={label} type="button" style={{
               flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
@@ -107,7 +103,7 @@ export default function Login() {
           ))}
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 14 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
           <div style={{ flex: 1, height: 1, background: C.border }} />
           <span style={{ color: C.muted, fontSize: 13 }}>Or</span>
           <div style={{ flex: 1, height: 1, background: C.border }} />
@@ -116,49 +112,44 @@ export default function Login() {
         <form onSubmit={handleSubmit}>
           <div style={{ marginBottom: 10 }}>
             <label style={{ display: 'block', color: C.muted, fontSize: 13, fontWeight: 500, marginBottom: 6 }}>Email</label>
-            <input
-              type="email" autoComplete="email" required
+            <input type="email" autoComplete="email" required
               value={email} onChange={e => setEmail(e.target.value)}
-              placeholder="eg. you@business.com"
-              style={inputStyle}
+              placeholder="eg. you@business.com" style={inputStyle}
               onFocus={e => (e.target.style.borderColor = C.accent)}
-              onBlur={e => (e.target.style.borderColor = C.border)}
-            />
+              onBlur={e => (e.target.style.borderColor = C.border)} />
           </div>
 
           <div>
             <label style={{ display: 'block', color: C.muted, fontSize: 13, fontWeight: 500, marginBottom: 6 }}>Password</label>
             <div style={{ position: 'relative' }}>
-              <input
-                type={showPassword ? 'text' : 'password'} autoComplete="current-password" required
+              <input type={showPassword ? 'text' : 'password'} autoComplete="current-password" required
                 value={password} onChange={e => setPassword(e.target.value)}
                 placeholder="Enter your password"
                 style={{ ...inputStyle, paddingRight: 48 }}
                 onFocus={e => (e.target.style.borderColor = C.accent)}
-                onBlur={e => (e.target.style.borderColor = C.border)}
-              />
+                onBlur={e => (e.target.style.borderColor = C.border)} />
               <button type="button" tabIndex={-1} onClick={() => setShowPassword(v => !v)}
                 style={{ position: 'absolute', right: 14, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: C.muted, display: 'flex', padding: 4 }}>
                 <EyeIcon open={showPassword} />
               </button>
             </div>
-            <p style={{ color: C.muted, fontSize: 12, marginTop: 6 }}>Must be at least 8 characters.</p>
+            <p style={{ color: C.muted, fontSize: 12, marginTop: 5 }}>Must be at least 8 characters.</p>
           </div>
 
           {error && (
             <div style={{
               background: mode === 'dark' ? 'rgba(248,113,113,0.08)' : 'rgba(220,38,38,0.06)',
               border: `1px solid ${mode === 'dark' ? 'rgba(248,113,113,0.25)' : 'rgba(220,38,38,0.2)'}`,
-              borderRadius: 10, padding: '12px 14px', color: C.error,
-              fontSize: 13, marginTop: 16,
+              borderRadius: 10, padding: '10px 14px', color: C.error,
+              fontSize: 13, marginTop: 10,
             }}>{error}</div>
           )}
 
           <button type="submit" disabled={loading} style={{
-            width: '100%', marginTop: 14,
+            width: '100%', marginTop: 16,
             background: loading ? C.surface2 : C.submitBg,
             color: loading ? C.muted : C.submitText,
-            border: 'none', borderRadius: 12, padding: '15px',
+            border: 'none', borderRadius: 12, padding: '14px',
             fontSize: 16, fontWeight: 700, cursor: loading ? 'default' : 'pointer',
             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
           }}>
@@ -166,14 +157,13 @@ export default function Login() {
           </button>
         </form>
 
-        <p style={{ color: C.muted, fontSize: 13, textAlign: 'center', marginTop: 14 }}>
-          Don't have an account?{' '}
-          <span onClick={() => navigate('/register')} style={{ color: C.accent, fontWeight: 600, cursor: 'pointer' }}>
-            Create one
-          </span>
-        </p>
-
-        <p style={{ color: C.subtle, fontSize: 11, textAlign: 'center', marginTop: 12, lineHeight: 1.6 }}>
+        {/* Terms pinned to bottom */}
+        <p style={{
+          color: C.subtle, fontSize: 11, textAlign: 'center', lineHeight: 1.6,
+          marginTop: 'auto',
+          paddingTop: 12,
+          paddingBottom: 'max(20px, env(safe-area-inset-bottom, 20px))',
+        }}>
           By continuing you agree to FlatPurse Flow's{' '}
           <span style={{ textDecoration: 'underline', cursor: 'pointer' }}>Terms</span>{' '}and{' '}
           <span style={{ textDecoration: 'underline', cursor: 'pointer' }}>Privacy Policy</span>.
