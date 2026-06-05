@@ -131,14 +131,18 @@ export default function Register() {
         {loading ? <><Spinner />Creating account…</> : 'Sign Up'}
       </button>
 
-      <p style={{ color: C.muted, fontSize: 13, textAlign: 'center', marginTop: 14 }}>
+      <p style={{ color: C.muted, fontSize: 13, textAlign: 'center', marginTop: 'auto', paddingTop: 14 }}>
         Already have an account?{' '}
         <span onClick={() => navigate('/login')} style={{ color: C.accent, fontWeight: 600, cursor: 'pointer' }}>
           Log in
         </span>
       </p>
 
-      <p style={{ color: C.subtle, fontSize: 11, textAlign: 'center', marginTop: 12, lineHeight: 1.6 }}>
+      <p style={{
+        color: C.subtle, fontSize: 11, textAlign: 'center', lineHeight: 1.6,
+        marginTop: 10,
+        paddingBottom: 'max(20px, env(safe-area-inset-bottom, 20px))',
+      }}>
         By continuing you agree to FlatPurse Flow's{' '}
         <span style={{ textDecoration: 'underline', cursor: 'pointer' }}>Terms</span>{' '}and{' '}
         <span style={{ textDecoration: 'underline', cursor: 'pointer' }}>Privacy Policy</span>.
@@ -184,29 +188,31 @@ export default function Register() {
   /* ── Mobile layout ─────────────────────────────────────────── */
   if (isMobile) {
     return (
-      <div style={{ minHeight: '100vh', background: C.bg, fontFamily: "'DM Sans', system-ui, sans-serif", colorScheme: mode }}>
+      <div style={{
+        height: '100dvh', background: C.bg,
+        fontFamily: "'DM Sans', system-ui, sans-serif",
+        colorScheme: mode,
+        display: 'flex', flexDirection: 'column',
+        overflow: 'hidden',
+      }}>
         <div style={{
+          flexShrink: 0,
           background: `linear-gradient(180deg, #6D28D9 0%, #4C1D95 40%, #1E0A3C 70%, ${C.bg} 100%)`,
           padding: '16px 24px 28px',
         }}>
-          {/* Logo + toggle on same row */}
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-            <img
-              src="/Flatpurse flow .svg"
-              alt="Flatpurse"
-              style={{ height: 30, width: 'auto', filter: 'brightness(0) invert(1)' }}
-            />
+            <img src="/Flatpurse flow .svg" alt="Flatpurse"
+              style={{ height: 30, width: 'auto', filter: 'brightness(0) invert(1)' }} />
             <button onClick={() => setMode(m => m === 'dark' ? 'light' : 'dark')}
               style={{ width: 34, height: 34, borderRadius: 8, background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.2)', color: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               {mode === 'dark' ? <SunIcon /> : <MoonIcon />}
             </button>
           </div>
-
           <h1 style={{ color: '#fff', fontSize: 24, fontWeight: 800, letterSpacing: '-0.03em', marginBottom: 4 }}>Sign Up Account</h1>
           <p style={{ color: 'rgba(255,255,255,0.65)', fontSize: 14, lineHeight: 1.5, margin: 0 }}>Enter your personal data to create your account.</p>
         </div>
 
-        <div style={{ padding: '12px 24px 20px' }}>
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: '14px 24px 0', overflow: 'hidden' }}>
           {socials}
           {form}
         </div>
