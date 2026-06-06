@@ -86,15 +86,15 @@ function useDashboard() {
 }
 
 const C = {
-  bg: '#12111E',
-  surface: '#1A1927',
-  surface2: '#211F30',
-  border: '#2C2A3F',
+  bg: '#0A0A0A',
+  surface: '#141414',
+  surface2: '#1C1C1C',
+  border: '#272727',
   accent: '#7C6EF5',
   accentSoft: 'rgba(124,110,245,0.15)',
-  text: '#E8E6F4',
-  muted: '#8C8AA8',
-  subtle: '#54526A',
+  text: '#F5F5F5',
+  muted: '#737373',
+  subtle: '#404040',
   green: '#34D399',
   greenSoft: 'rgba(52,211,153,0.12)',
 }

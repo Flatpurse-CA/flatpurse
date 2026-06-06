@@ -25,7 +25,7 @@ function AppShell() {
   const isMobile = useIsMobile()
 
   const dark = mode === 'dark'
-  const pageBg = dark ? '#12111E' : '#F0F0F5'
+  const pageBg = dark ? '#0A0A0A' : '#F0F0F5'
 
   const pages: Record<Tab, React.ReactElement> = {
     home: <Home />,

@@ -4,14 +4,14 @@ import type { Tab } from '../App'
 
 function palette(mode: 'dark' | 'light') {
   if (mode === 'dark') return {
-    bg: '#16151F',
-    surface: '#1E1D2B',
-    surface2: '#26243A',
-    border: '#2C2A3F',
+    bg: '#111111',
+    surface: '#1A1A1A',
+    surface2: '#222222',
+    border: '#2A2A2A',
     accent: '#7C6EF5',
-    text: '#E8E6F4',
-    muted: '#8C8AA8',
-    subtle: '#3E3C55',
+    text: '#F5F5F5',
+    muted: '#737373',
+    subtle: '#404040',
   }
   return {
     bg: '#FFFFFF',

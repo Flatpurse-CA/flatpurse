@@ -22,12 +22,12 @@ export default function TopBar({ mode, onToggleMode }: TopBarProps) {
 
   const dark = mode === 'dark'
   const C = {
-    bg: dark ? '#1A1927' : '#FFFFFF',
-    border: dark ? '#2C2A3F' : '#E4E4E7',
-    text: dark ? '#E8E6F4' : '#09090B',
-    muted: dark ? '#8C8AA8' : '#71717A',
-    surface: dark ? '#211F30' : '#F4F4F5',
-    surface2: dark ? '#2C2A3F' : '#E4E4E7',
+    bg: dark ? '#111111' : '#FFFFFF',
+    border: dark ? '#2A2A2A' : '#E4E4E7',
+    text: dark ? '#F5F5F5' : '#09090B',
+    muted: dark ? '#737373' : '#71717A',
+    surface: dark ? '#1A1A1A' : '#F4F4F5',
+    surface2: dark ? '#272727' : '#E4E4E7',
     accent: '#7C6EF5',
     badge: '#EF4444',
   }
