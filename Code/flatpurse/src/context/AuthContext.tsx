@@ -30,6 +30,7 @@ interface AuthContextValue {
   session: Session | null
   loading: boolean
   login: (email: string, password: string) => Promise<void>
+  signUp: (payload: RegisterPayload) => Promise<void>
   sendOtp: (phone: string) => Promise<void>
   verifyOtp: (phone: string, token: string) => Promise<void>
   completeRegistration: (payload: RegisterPayload) => Promise<void>
@@ -75,6 +76,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (error) throw new Error(error.message)
   }
 
+  const signUp = async (payload: RegisterPayload) => {
+    const { error } = await supabase.auth.signUp({
+      email: payload.email,
+      password: payload.password,
+      options: {
+        data: {
+          firstName: payload.firstName,
+          lastName: payload.lastName,
+          phone: payload.phone,
+          businessName: payload.businessName,
+          businessType: payload.businessType,
+          city: payload.city,
+          province: payload.province,
+          plan: payload.plan,
+        },
+      },
+    })
+    if (error) throw new Error(error.message)
+  }
+
   const sendOtp = async (phone: string) => {
     const { error } = await supabase.auth.signInWithOtp({ phone, options: { channel: 'sms' } })
     if (error) throw new Error(error.message)
@@ -108,7 +129,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, session, loading, login, sendOtp, verifyOtp, completeRegistration, logout }}>
+    <AuthContext.Provider value={{ user, session, loading, login, signUp, sendOtp, verifyOtp, completeRegistration, logout }}>
       {children}
     </AuthContext.Provider>
   )

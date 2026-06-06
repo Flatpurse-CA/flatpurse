@@ -51,7 +51,7 @@ const PRICING = [
 
 export default function Register() {
   const navigate = useNavigate()
-  const { sendOtp: authSendOtp, verifyOtp: authVerifyOtp, completeRegistration } = useAuth()
+  const { signUp, sendOtp: authSendOtp, verifyOtp: authVerifyOtp, completeRegistration } = useAuth()
   const isMobile = useIsMobile()
 
   const [mode, setMode] = useState<Mode>('dark')
@@ -130,7 +130,7 @@ export default function Register() {
     setError(null); setLoading(true)
     try {
       await authVerifyOtp(phone, code)
-      await completeRegistration({ firstName, lastName, email, password, phone, businessName: shopName, businessType: businessType ?? '', city, province, plan: selectedPlan })
+      await signUp({ firstName, lastName, email, password, phone, businessName: shopName, businessType: businessType ?? '', city, province, plan: selectedPlan })
       setShowDownloadModal(true)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Verification failed. Please try again.')
@@ -140,11 +140,12 @@ export default function Register() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (password.length < 8) { setError('Password must be at least 8 characters.'); return }
+    if (!firstName.trim() || !lastName.trim()) { setError('Please enter your first and last name.'); return }
     setError(null)
     setLoading(true)
     try {
-      await new Promise(r => setTimeout(r, 800))
-      navigate('/login')
+      await signUp({ firstName, lastName, email, password, phone: '', businessName: '', businessType: '', city: '', province: '', plan: 'starter' })
+      navigate('/app', { replace: true })
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Sign up failed')
     } finally {
@@ -421,8 +422,6 @@ export default function Register() {
           </div>
         </div>
       )}
-
-      {/* Login → download modal */}
 
       {/* Left panel — step 1 only, full-bleed photo */}
       {step === 1 && (
