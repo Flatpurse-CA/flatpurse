@@ -51,7 +51,7 @@ const PRICING = [
 
 export default function Register() {
   const navigate = useNavigate()
-  const { signUp, sendOtp: authSendOtp, verifyOtp: authVerifyOtp, completeRegistration } = useAuth()
+  const { signUp, sendOtp: authSendOtp, verifyOtp: authVerifyOtp } = useAuth()
   const isMobile = useIsMobile()
 
   const [mode, setMode] = useState<Mode>('dark')
