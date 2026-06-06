@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider, useAuth } from './context/AuthContext'
 import BottomNav from './components/BottomNav'
 import Sidebar from './components/Sidebar'
+import TopBar from './components/TopBar'
 import Landing from './pages/Landing'
 import Login from './pages/Login'
 import Register from './pages/Register'
@@ -19,8 +20,12 @@ export type Tab = 'home' | 'bookings' | 'clients' | 'team' | 'autopilot' | 'oper
 
 function AppShell() {
   const [tab, setTab] = useState<Tab>('home')
+  const [mode, setMode] = useState<'dark' | 'light'>('dark')
   const { user } = useAuth()
   const isMobile = useIsMobile()
+
+  const dark = mode === 'dark'
+  const pageBg = dark ? '#12111E' : '#F0F0F5'
 
   const pages: Record<Tab, React.ReactElement> = {
     home: <Home />,
@@ -65,11 +70,14 @@ function AppShell() {
 
   /* ── Desktop ─────────────────────────────────────────────── */
   return (
-    <div style={{ display: 'flex', height: '100vh', background: '#12111E', fontFamily: "'DM Sans', system-ui, sans-serif", overflow: 'hidden' }}>
-      <Sidebar active={tab} onChange={setTab} />
-      <main style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', background: '#12111E' }}>
-        {pages[tab]}
-      </main>
+    <div style={{ display: 'flex', height: '100vh', background: pageBg, fontFamily: "'DM Sans', system-ui, sans-serif", overflow: 'hidden', colorScheme: mode }}>
+      <Sidebar active={tab} onChange={setTab} mode={mode} />
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+        <TopBar mode={mode} onToggleMode={() => setMode(m => m === 'dark' ? 'light' : 'dark')} />
+        <main style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', background: pageBg }}>
+          {pages[tab]}
+        </main>
+      </div>
     </div>
   )
 }

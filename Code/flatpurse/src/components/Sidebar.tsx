@@ -2,17 +2,27 @@ import React, { useState } from 'react'
 import { useAuth } from '../context/AuthContext'
 import type { Tab } from '../App'
 
-const C = {
-  bg: '#16151F',
-  surface: '#1E1D2B',
-  surface2: '#26243A',
-  border: '#2C2A3F',
-  accent: '#7C6EF5',
-  accentGlow: 'rgba(124,110,245,0.18)',
-  text: '#E8E6F4',
-  muted: '#8C8AA8',
-  subtle: '#3E3C55',
-  green: '#34D399',
+function palette(mode: 'dark' | 'light') {
+  if (mode === 'dark') return {
+    bg: '#16151F',
+    surface: '#1E1D2B',
+    surface2: '#26243A',
+    border: '#2C2A3F',
+    accent: '#7C6EF5',
+    text: '#E8E6F4',
+    muted: '#8C8AA8',
+    subtle: '#3E3C55',
+  }
+  return {
+    bg: '#FFFFFF',
+    surface: '#F4F4F5',
+    surface2: '#E9E9EC',
+    border: '#E4E4E7',
+    accent: '#7C6EF5',
+    text: '#09090B',
+    muted: '#71717A',
+    subtle: '#A1A1AA',
+  }
 }
 
 interface NavItem {
@@ -38,12 +48,14 @@ const SECONDARY = [
 interface SidebarProps {
   active: Tab
   onChange: (tab: Tab) => void
+  mode?: 'dark' | 'light'
 }
 
-export default function Sidebar({ active, onChange }: SidebarProps) {
+export default function Sidebar({ active, onChange, mode = 'dark' }: SidebarProps) {
   const { user, logout } = useAuth()
   const [collapsed, setCollapsed] = useState(false)
   const [search, setSearch] = useState('')
+  const C = palette(mode)
 
   const initials = user
     ? `${user.firstName?.[0] ?? ''}${user.lastName?.[0] ?? ''}`.toUpperCase() || '?'
