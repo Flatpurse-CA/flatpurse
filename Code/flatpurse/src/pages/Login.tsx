@@ -1,13 +1,11 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import { palette, useIsMobile, type Mode } from '../lib/auth-ui'
+import { palette, type Mode } from '../lib/auth-ui'
 
-// Desktop users go to Create Account — sign in is mobile only
 export default function Login() {
   const { login } = useAuth()
   const navigate = useNavigate()
-  const isMobile = useIsMobile()
 
   const [mode, setMode] = useState<Mode>('dark')
   const C = palette(mode)
@@ -19,10 +17,6 @@ export default function Login() {
   const [loading, setLoading] = useState(false)
 
   const containerRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    if (!isMobile) navigate('/register', { replace: true })
-  }, [isMobile, navigate])
 
   // Focus the wrapper div on mount so iOS doesn't auto-focus the first input
   useEffect(() => {
@@ -55,8 +49,6 @@ export default function Login() {
     transition: 'border-color 0.15s',
     boxSizing: 'border-box',
   }
-
-  if (!isMobile) return null
 
   return (
     <div
