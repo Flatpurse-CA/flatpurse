@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider, useAuth } from './context/AuthContext'
 import BottomNav from './components/BottomNav'
+import Sidebar from './components/Sidebar'
 import Landing from './pages/Landing'
 import Login from './pages/Login'
 import Register from './pages/Register'
@@ -12,12 +13,14 @@ import Team from './pages/Team'
 import AutoPilot from './pages/AutoPilot'
 import Operations from './pages/Operations'
 import Splash from './pages/Splash'
+import { useIsMobile } from './lib/auth-ui'
 
 export type Tab = 'home' | 'bookings' | 'clients' | 'team' | 'autopilot' | 'operations'
 
 function AppShell() {
   const [tab, setTab] = useState<Tab>('home')
   const { user } = useAuth()
+  const isMobile = useIsMobile()
 
   const pages: Record<Tab, React.ReactElement> = {
     home: <Home />,
@@ -28,40 +31,45 @@ function AppShell() {
     operations: <Operations />,
   }
 
-  const initials = user
-    ? `${user.firstName?.[0] ?? ''}${user.lastName?.[0] ?? ''}`.toUpperCase()
-    : '?'
-
-  return (
-    <div className="flex flex-col h-dvh bg-bg font-sans max-w-[480px] mx-auto relative overflow-hidden">
-      {/* Header */}
-      <header
-        className="flex items-center justify-between px-5 shrink-0 z-40"
-        style={{ paddingTop: 'calc(var(--safe-area-top) + 14px)', paddingBottom: 14 }}
-      >
-        <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-lg bg-accent flex items-center justify-center">
-            <span className="text-white text-xs font-bold">f</span>
+  /* ── Mobile ─────────────────────────────────────────────── */
+  if (isMobile) {
+    const initials = user
+      ? `${user.firstName?.[0] ?? ''}${user.lastName?.[0] ?? ''}`.toUpperCase()
+      : '?'
+    return (
+      <div className="flex flex-col h-dvh bg-bg font-sans max-w-[480px] mx-auto relative overflow-hidden">
+        <header
+          className="flex items-center justify-between px-5 shrink-0 z-40"
+          style={{ paddingTop: 'calc(var(--safe-area-top) + 14px)', paddingBottom: 14 }}
+        >
+          <div className="flex items-center gap-2">
+            <div className="w-7 h-7 rounded-lg bg-accent flex items-center justify-center">
+              <span className="text-white text-xs font-bold">f</span>
+            </div>
+            <span className="text-text font-bold text-base tracking-tight">flatpurse</span>
           </div>
-          <span className="text-text font-bold text-base tracking-tight">flatpurse</span>
-        </div>
-        <button className="w-8 h-8 rounded-full bg-surface2 border border-border flex items-center justify-center font-bold text-xs text-accent-text cursor-pointer">
-          {initials}
-        </button>
-      </header>
+          <button className="w-8 h-8 rounded-full bg-surface2 border border-border flex items-center justify-center font-bold text-xs text-accent-text cursor-pointer">
+            {initials}
+          </button>
+        </header>
+        <main
+          className="flex-1 overflow-y-auto overflow-x-hidden"
+          style={{ paddingBottom: 'calc(var(--safe-area-bottom, 0px) + 72px)', WebkitOverflowScrolling: 'touch' }}
+        >
+          {pages[tab]}
+        </main>
+        <BottomNav active={tab} onChange={setTab} />
+      </div>
+    )
+  }
 
-      {/* Content */}
-      <main
-        className="flex-1 overflow-y-auto overflow-x-hidden"
-        style={{
-          paddingBottom: 'calc(var(--safe-area-bottom, 0px) + 72px)',
-          WebkitOverflowScrolling: 'touch',
-        }}
-      >
+  /* ── Desktop ─────────────────────────────────────────────── */
+  return (
+    <div style={{ display: 'flex', height: '100vh', background: '#12111E', fontFamily: "'DM Sans', system-ui, sans-serif", overflow: 'hidden' }}>
+      <Sidebar active={tab} onChange={setTab} />
+      <main style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', background: '#12111E' }}>
         {pages[tab]}
       </main>
-
-      <BottomNav active={tab} onChange={setTab} />
     </div>
   )
 }
