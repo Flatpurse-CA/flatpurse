@@ -730,14 +730,14 @@ export default function Register() {
                             <button type="button" disabled={loading} onClick={async e => {
                               e.stopPropagation()
                               if (!phone.trim()) { setError('Please go back and add your phone number to verify your account.'); return }
-                              setError(null); setLoading(true)
+                              setError(null)
+                              setOtp(['', '', '', '', '', ''])
+                              goToStep(4)
                               try {
                                 await sendOtp()
-                                setOtp(['', '', '', '', '', ''])
-                                goToStep(4)
                               } catch (err) {
                                 setError(err instanceof Error ? err.message : 'Failed to send verification code')
-                              } finally { setLoading(false) }
+                              }
                             }}
                               style={{
                                 width: '100%',
